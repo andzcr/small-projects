@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCLP Test</title>
+    <!-- Import fonturi moderne -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABILE SI RESET --- */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111111;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #3b82f6; /* Albastru electric */
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --code-bg: #1e1e1e;
+            --border-color: #333;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* --- LAYOUT & HEADER --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Spatiu pentru footer */
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 0 40px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(120deg, #fff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        /* --- SECTIUNI --- */
+        h2 {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin: 50px 0 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 25px;
+            background-color: var(--accent-color);
+            margin-right: 15px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* --- CARDS INTREBARI --- */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        .q-tag {
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-color);
+            opacity: 0.8;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .answer-text {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            white-space: pre-line; /* Pastreaza formatarea originala pe linii */
+        }
+
+        .comment {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            border-left: 2px solid #333;
+            padding-left: 10px;
+        }
+
+        .warning-text {
+            color: var(--warning);
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* --- CODE BLOCKS --- */
+        .code-wrapper {
+            margin-top: 15px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: #252526;
+            padding: 5px 15px;
+            font-size: 0.75rem;
+            color: #888;
+            font-family: 'Inter', sans-serif;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .dots span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            overflow-x: auto;
+            margin: 0;
+            border: 1px solid #2d2d2d;
+            border-top: none;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+
+        /* Syntax Highlighting Simulat */
+        .kw { color: #569cd6; } /* keyword */
+        .str { color: #ce9178; } /* string */
+        .fn { color: #dcdcaa; } /* function */
+        .num { color: #b5cea8; } /* number */
+        .com { color: #6a9955; } /* comment */
+        .op { color: #d4d4d4; } /* operator */
+
+        /* Inline code styling for text context */
+        .answer-text code {
+            background-color: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent-color);
+        }
+
+        /* --- STILURI EXTRA PENTRU CONVERSIE --- */
+        .conversion-step {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--accent-color);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        .conversion-title {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        .step-list {
+            margin-left: 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        .step-list li {
+            margin-bottom: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        .result-box {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #fff;
+            border-top: 1px dashed #444;
+            padding-top: 8px;
+        }
+
+        /* --- FOOTER SPECIAL --- */
+        footer {
+            margin-top: 80px;
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(to top, #000, rgba(5,5,5,0));
+            border-top: 1px solid #111;
+        }
+
+        .footer-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            color: #666;
+            cursor: default;
+            transition: all 0.4s ease;
+        }
+
+        .footer-text {
+            transition: filter 0.4s ease, opacity 0.4s ease;
+        }
+
+        .footer-link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.4s ease;
+            display: inline-block;
+        }
+
+        /* THE MAGIC EFFECT */
+        .footer-container:hover .footer-text {
+            filter: blur(3px);
+            opacity: 0.4;
+        }
+
+        .footer-link:hover {
+            transform: scale(1.5) translateY(-2px);
+            color: var(--accent-color);
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2.2rem; }
+            .card { padding: 20px; }
+            .question-text { font-size: 1.1rem; }
+            pre { padding: 10px; }
+            code { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>PCLP Test</h1>
+        </header>
+
+        <!-- SECTIUNEA TEORIE -->
+        <section>
+            <h2>TEORIE</h2>
+
+            <div class="card">
+                <span class="q-tag">P1.1</span>
+                <div class="question-text">Ce reprezinta datele si care sunt atributele lor?</div>
+                <div class="answer-text">
+                    R: Datele = Informațiile prelucrate.
+                    Atributele = Nume, Tip, Valoare, Adresă.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.2</span>
+                <div class="question-text">Care sunt modurile de transfer a parametrilor unei functii?</div>
+                <div class="answer-text">
+                    R: Prin valoare, pointer sau referinta.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.3</span>
+                <div class="question-text">In ce consta diferenta dintre structuri si uniuni?</div>
+                <div class="answer-text">
+                    R: Modul de memorare.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.4</span>
+                <div class="question-text">Care este diferenta dintre sirurile de caractere si vectorii de caractere?</div>
+                <div class="answer-text">
+                    R: Vector de caractere: O simplă listă de litere.
+                    Sir de caractere: Acelasi lucru dar se termina cu \0
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.5</span>
+                <div class="question-text">Ce sunt directivele prepocesor</div>
+                <div class="answer-text">
+                    R: Librarii in care se gasesc anumite functii
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.6</span>
+                <div class="question-text">Care este legatura intre tablouri si pointeri?</div>
+                <div class="answer-text">
+                    R: Legatura este: numele unui tablou este un pointer.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.7</span>
+                <div class="question-text">Enumerati operatorii logici/relationali?</div>
+                <div class="answer-text">
+                    R: <strong>Operatori logici</strong>
+                    - && (SI) Adevărat doar dacă ambele condiții sunt adevărate.
+                    - || (SAU): Adevărat dacă măcar una din condiții este adevărată.
+                    - ! (NEGAȚIE): Transformă Adevărat în Fals și invers.
+                    
+                    <strong>Operatori relaționali</strong>
+                    - < (mai mic)
+                    - > (mai mare)
+                    - <= (mai mic sau egal)
+                    - >= (mai mare sau egal)
+                    - == (egal)
+                    - != (diferit)
+                    <div class="comment">( nu se vede ca profu vostru are chef de mistouri )</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.8</span>
+                <div class="question-text">Comparatie intre declararea si definirea functiilor.</div>
+                <div class="answer-text">
+                    R: Declaratie - declari la inceputul programului, de aici poti utiliza functia.
+                    Definirea - contine declararea dar si continutul functiei.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.9</span>
+                <div class="question-text">Care este modalitatea de a interzice modificarea valorii unor variabile?</div>
+                <div class="answer-text">
+                    R: adaugi const in fata variabilei.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P1.10</span>
+                <div class="question-text">Care sunt instructiunile care implementeaza in limbajul C structura ____ (conditionala sau secventiala)</div>
+                <div class="answer-text">
+                    R: Conditionala: if si switch
+                    Secventiala: vida sau compusa.
+                    <div class="comment">(iarasi, nu se vede exact)</div>
+                </div>
+            </div>
+            
+            <div class="card" style="border-color: #444;">
+                <span class="q-tag">Suplimentar 1</span>
+                <div class="question-text">Ce legatura exista intre limbajele C si C++</div>
+                <div class="answer-text">
+                    R: C++ este o varianta imbunatatita a limbajului C, mai puternica.
+                </div>
+            </div>
+
+            <div class="card" style="border-color: #444;">
+                <span class="q-tag">Suplimentar 2</span>
+                <div class="question-text">Ce sunt tablourile?</div>
+                <div class="answer-text">
+                    R: Colectie de date de acelasi tip, situate intr-o zona de memorie continua.
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIUNEA APLICATIV -->
+        <section>
+            <h2>APLICATIV</h2>
+            <p class="comment" style="margin-bottom: 20px;">Aici o sa iau numere teoretice doar sa intelegeti conceptul, sper sa reusesc :)</p>
+
+            <div class="card">
+                <span class="q-tag">P2.1</span>
+                <div class="question-text">Convertirea in binar, hexa si in baza 10.</div>
+                <div class="answer-text">
+                    <p style="margin-bottom: 15px;">Exemplul nostru: <strong>Numărul 13</strong> (este deja in baza 10)</p>
+        
+                    <div class="conversion-step">
+                        <span class="conversion-title">1. ÎN BAZA 2 (BINAR) - METODA "ÎMPĂRȚIREA LA 2"</span>
+                        <p style="font-size: 0.95rem; margin-bottom: 5px;">Împărțim numărul la 2 și ținem minte restul (care va fi mereu 0 sau 1).</p>
+                        <ul class="step-list">
+                            <li>13 / 2 = 6 (rest 1)</li>
+                            <li> 6 / 2 = 3 (rest 0)</li>
+                            <li> 3 / 2 = 1 (rest 1)</li>
+                            <li> 1 / 2 = 0 (rest 1)</li>
+                        </ul>
+                        <div class="result-box">
+                            Acum, citim resturile de jos în sus.<br>
+                            Rezultatul: <span style="color: var(--success); font-family: 'JetBrains Mono';">1101</span>
+                        </div>
+                    </div>
+            
+                    <div class="conversion-step">
+                        <span class="conversion-title">2. ÎN BAZA 16 (HEXAZECIMAL)</span>
+                        <p style="font-size: 0.95rem; margin-bottom: 5px;">Aici avem cifre de la 0 la 9, iar apoi litere: A=10, B=11, C=12, D=13, E=14, F=15. Metoda este împărțirea la 16.</p>
+                        <ul class="step-list">
+                            <li>13 / 16 = 0 (rest 13)</li>
+                        </ul>
+                        <div class="result-box">
+                            Ne uităm în listă: 13 corespunde literei D.<br>
+                            Deci, 13 în hexa este <span style="color: var(--success); font-family: 'JetBrains Mono';">D</span>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P2.2</span>
+                <div class="question-text">Operatii:</div>
+                <div class="answer-text">
+                    Lista principală:
+                    + Adunare : 7+7 = 14;
+                    - Scădere : 7-7 = 0;
+                    * Înmulțire (folosim steluța, nu x) : 7*2 = 14
+                    / Împărțire : 7/2: 3 (!NU 3.5, scrii doar partea intreaga)
+                    % Modulo (Restul împărțirii) : 7%2 = 1
+                    ^ Operatorul XOR (Sau Exclusiv) : 7^2 = 49 (Nu este putere!); Pentru ridicare la putere folosim <code>pow(7, 2)</code>.
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P2.3</span>
+                <div class="question-text">Care este sintaxa generala de declarare a unei functii / variabile sau constante.</div>
+                <div class="answer-text">
+                    <div class="comment">( in continuare are chef de glume )</div>
+            
+                    <strong>= Variabile</strong>
+                    Gândește-te la o variabilă ca la o cutie pe care pui o etichetă (numele) și în care ții ceva (valoarea).
+                    Trebuie să îi spui calculatorului ce formă are cutia (tipul de date).
+                    Sintaxa: <code>tip_date nume_variabila = valoare;</code>
+                    Exemple:
+                    <code>int scor = 100;</code> (pentru numere întregi)
+                    <code>float pret = 9.99;</code> (pentru numere cu virgulă)
+                    <code>char litera = 'A';</code> (pentru un singur caracter)
+            
+                    <strong>= Constante</strong>
+                    Sunt variabile "bătute în cuie". Odată ce le-ai dat o valoare, nu o mai poți schimba în restul programului.
+                    Se folosește cuvântul cheie const.
+                    Sintaxa: <code>const tip_date NUME_CONSTANTA = valoare;</code>
+                    Exemplu:
+                    <code>const float PI = 3.14;</code>
+            
+                    <strong>= Funcții</strong>
+                    O funcție este ca o mașinărie mică: îi dai materiale (parametri), ea lucrează și îți scoate un produs finit (rezultatul returnat).
+                    EXEMPLU:
+                    <div class="code-wrapper">
+                        <div class="code-header"><span>exemplu.c</span></div>
+<pre>
+<span class="kw">int</span> <span class="fn">adunare</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+    <span class="kw">return</span> a <span class="op">+</span> b;
+}
+</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P2.4</span>
+                <div class="question-text">Char (MATRICI)</div>
+                <div class="answer-text">
+                    Gândește-te la char tab[X][Y] ca la o matrice.
+                    Primul număr (X) din paranteze reprezintă liniile.
+                    Al doilea număr (Y) reprezintă coloanele.
+                    <span class="warning-text">!! ATENTIE: ELEMENTELE SUNT CALCULATE DE LA 0, 1, 2, 3, 4 deci daca ai: char tab[5][5] si iti cere tab[0][2] (VA FI PRIMA LINIE, A 3-A COLOANA)</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">P3.1</span>
+                <div class="question-text">Ai problema:</div>
+                <div class="answer-text">
+                    <div class="code-wrapper">
+                        <div class="code-header"><span>problema.cpp</span></div>
+<pre>
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">char</span> h1[15] <span class="op">=</span> {<span class="str">'a'</span>, <span class="str">'s'</span>, <span class="str">'d'</span>, <span class="str">'f'</span>, <span class="str">'g'</span>};
+    <span class="kw">char</span> h[15] <span class="op">=</span> <span class="str">"sir de caractere"</span>;
+    
+    cout <span class="op">&lt;&lt;</span> h; 
+    cout <span class="op">&lt;&lt;</span> h1[2]; 
+    cout <span class="op">&lt;&lt;</span> h[2];
+}
+</pre>
+                    </div>
+                    Se va afisa <strong>sir de caracteredr</strong> pentru ca se afiseaza o data: h = adica sir de caractere, dupa al 3-lea element din h1 (d) si al treilea element din h (r).
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="q-tag">Explicare operatii in c++</span>
+                <div class="question-text">***S1***</div>
+                <div class="answer-text">
+                    a*d-c || a+b*c
+                    <div class="code-wrapper">
+                        <div class="code-header"><span>logic.c</span></div>
+<pre>
+<span class="kw">int</span> <span class="fn">calcul1</span>(<span class="kw">int</span> a, <span class="kw">int</span> d, <span class="kw">int</span> c) {
+    <span class="kw">return</span> a <span class="op">*</span> d <span class="op">-</span> c;
+}
+<span class="kw">int</span> <span class="fn">calcul2</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c) {
+    <span class="kw">return</span> a <span class="op">+</span> d <span class="op">*</span> c; 
+}
+</pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <span class="footer-text">Website creat de</span>
+            <a href="https://andzcr.github.io" class="footer-link" target="_blank">andz</a>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+
